@@ -1,0 +1,43 @@
+\listfiles
+\documentclass[10pt]{article}
+\usepackage{geometry}               
+\geometry{letterpaper}                
+\usepackage[parfill]{parskip}    
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{epstopdf}
+\usepackage{setspace}
+\usepackage{cite}
+\usepackage{natbib}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+citebordercolor=green
+}
+\onehalfspacing
+\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\title{Task Description: Program a GUI with an Installer}
+\author{Harvard Department of Government}
+\date{Last updated: March 11, 2012}                                          
+\begin{document}
+\maketitle
+\begin{quotation}
+This is a description of a simple programming task that consists of two parts. First, create a GUI that allows the user to execute several existing functions. Second, write an installer for Windows and Mac. If you have any questions, contact clucas@fas.harvard.edu.
+\end{quotation}
+\section*{Task Description}
+Amazon MTurk is an internet marketplace in which \emph{requesters} post tasks that \emph{workers} complete in exchange for payment. MTurk is often used for survey research, in which the task is to complete the survey. However, since MTurk was not created explicitly for survey research, its standard functionalities are not those most important to the survey researcher. 
+
+Two functions were written to address this shortcoming, both of which must be run from the command line. Since some survey researchers using MTurk are not comfortable working from the command line, the provision of a GUI and an installer will increase the utility of these functions. 
+
+The functions are simple. The first, NotifyCSV, allows the requester to contact workers in batch. The second, PayBonusCSV, allows the requester to pay bonuses to workers in batch. Both are written in Java, take a csv as input, and use Apache ANT to compile and execute the java script.
+
+You have a great deal of flexibility over how you implement this task. The only requirements are simplicity and stability. The user should be able to install and run the program without using the command line. 
+\end{document}
+
+
+
+
+
+
+
+

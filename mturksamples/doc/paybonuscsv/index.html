@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+  <title>PayBonusCSV: A small tool for interacting with mTurk</title>
+  <link rel="stylesheet" href="stylesheet.css">
+</head>
+
+<body>
+
+<!-- Main content -->
+<h1>PayBonusCSV</h1>
+
+<description>PayBonusCSV is a utility that uses the Mechanical Turk
+  API in Java to pay bonuses to a number of workers in batch.</description>
+
+<p> PayBonusCSV is built on top of the Mechanical Turk sample package,
+  and uses the <b>Apache ANT</b> utility to both compile and execute
+  the java script.
+
+<h2>File Setup</h2>
+
+Before running the script, you must set up the csv input file and let
+the script know the secret key for your Mechanical Turk account.
+<br>
+The <code>testinp.csv</code> file is included in
+the <code>samples</code> directory.  Each line contains a
+comma-separated list consisting of the assignment ID, the worker ID,
+the bonus amount and the reason for paying (in that order).
+<p>
+<output>
+2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X,A27ANNY9E0URA2,0.5,because
+<br>2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X,A27ANNY9E0URA2,1,Good job!
+<br>2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X,A27ANNY9E0URA2,2.22,Thank you.
+</output>
+<p>
+This file pays three different bonuses to the same worker for the same
+assignment (but for different reasons).  Notice that including commas
+(,) in the reason may lead to unexpected results.  You may use a
+spreadsheet program such as excel to create your own csv file, and you
+may save it anywhere on your hard drive.
+
+The file <code>mturk.properties</code> contains the relevant keys to
+access your account.  You can find your access keys by going to
+aws.amazon.com, hovering your mouse over "Your Web Services Account"
+in the top-right corner and selecting View Access Key Identifiers. Be
+sure to log-in with the same username and password you registered with
+your Mechanical Turk Requester account.
+<p>In the same file, choose the
+appropriate <code>service_url</code> for either the developer sandbox
+(to test things) or the production side (if you are confident that
+your system is correctly set-up).
+
+<h2>Running</h2>
+
+To run the script, open a terminal and navigate to the directory
+containing the <code>build.xml</code> file.  Type <code>ant</code> at
+the command line, to verify that ant is installed:
+<p>
+<output>
+<br>bash-3.2$ ant
+<br>Buildfile: /Users/astorer/Work/eclipse/mturksamples/build.xml
+<br>
+<br>help:
+<br>     [echo] Run 'ant helloworld' to run the MTurkHelloWorld application.
+<br>     [echo] Run 'ant survey' to run the Simple Survey application.
+<br>     [echo] Run 'ant image' to run the Best Image application.  Use the optional ' -Dpreview=[preview file name]' parameter to preview.
+<br>     [echo] Run 'ant category' to run the Site Category application.
+<br>     [echo] Run 'ant reviewerForHIT -DhitID=[the HIT ID]' to run the Reviewer application.
+<br>     [echo] Run 'ant reviewerForHITFile -Dsuccess_file=[filename of .success file]' -Doutput_file=[filename of output file] to run the Reviewer application.
+<br>     [echo] Run 'ant paybonus -DassignID=[assignment id] -DworkerID=[the worker ID] -Dbonusamt=[the Bonus Amount] -dReason=[the reason for the bonus]' to run the paybonus application.
+<br>     [echo] Run 'ant paybonuscsv -Dbonuscsv=[filename of .csv file] to pay bonuses in batch specified by the csv file.
+<br>     [echo] Run 'ant filter' to run the MyHIT application which uses the AppendKeywordFilter.
+<br>     [echo] Run 'ant compile-sample' to compile the sample code.
+<br>     [echo] Run 'ant jar' to build the sdk sources and create jar.
+<br>     [echo] Run 'ant run-test' to run the junit tests for the sdk.
+<br>     [echo] Run 'ant doc' to create javadocs for the sdk and sample java sources.
+<br>     [echo] Run 'ant dist' to create the all distributables of the sdk.
+<br>     [echo] Run 'ant unix' to create the gzip distributable of the sdk for unix.
+<br>     [echo] Run 'ant windows' to create the zip distributable of the sdk for windows.
+<br>
+<br>BUILD SUCCESSFUL
+<br>Total time: 4 seconds
+</output>
+<p>
+This output demonstrates that ant is installed, and is referring to
+the correct <code>build.xml</code> file.  To run the PayBonusCSV
+script, type <code>ant paybonuscsv -Dbonuscsv=[location]</code>
+<p>
+Make sure you include the entire path to the file, e.g.:
+<output>
+bash-3.2$ ant paybonuscsv
+-Dbonuscsv="/Users/astorer/Work/eclipse/mturksamples/samples/testinp.csv"
+</output>
+<p>
+As the script runs, it will echo back the information sent to the
+Mechanical Turk servers, and finally report a summary of the actions
+taken:
+<output>
+     [java] Awarded a total of $3.72 to 3 workers.
+</output>
+<h2>Feedback</h2>
+If you encounter any problems using this script, please contact <a href="mailto:dataquest@help.hmdc.harvard.edu">dataquest@help.hmdc.harvard.edu</a>
+
+<!-- Sign and date the page, it's only polite! -->
+<address>Created 2011.12.08<br>
+  by Alex Storer</address>
+
+</body>
+</html>

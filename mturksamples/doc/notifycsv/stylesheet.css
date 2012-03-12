@@ -1,0 +1,48 @@
+body {
+  margin-top: 0.5em;
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  padding-left: 4em;
+  border-style: solid;
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  color: DarkBlue;
+
+  background-color: beige }
+h1 {
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  border-bottom: thin }
+h2 {
+  font-family: Helvetica, Geneva, Arial,
+        SunSans-Regular, sans-serif;
+  text-transform: uppercase;
+  border-bottom: thin dotted }
+a:link {
+  color: blue }
+a:visited {
+  color: purple }
+address {
+  margin-top: 1em;
+  padding-top: 1em;
+  border-top: thin dotted }
+code {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  background-color: bisque;
+  font-weight: bold;
+  color: DarkSlateGray;
+  font-family: monospace; }
+output {
+  display: block;
+  padding: 0.5em;
+  background-color: bisque;
+  font-weight: bold;
+  color: DarkSlateGray;
+  border-style: dotted;
+  font-family: monospace; }
+description {
+  background-color: bisque;
+  font-weight: bold;}
