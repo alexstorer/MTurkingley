@@ -262,6 +262,21 @@
     </java>
   </target>
 
+  <target name="filechooserdemo" depends="compile-sample" description="Run the sample app">
+    <echo message="Running the file chooser demo application..." />
+    <java dir="${sample.src.dir}/components/" classname="components.FileChooserDemo" fork="true">
+      <classpath refid="runtime.classpath"/>
+    </java>
+  </target>
+
+  <target name="hellogui" depends="compile-sample" description="Run the sample app">
+    <echo message="Running the Hello World sample application..." />
+    <java dir="${sample.src.dir}/hellogui/" classname="hellogui.MTurkHelloGUI" fork="true">
+      <classpath refid="runtime.classpath"/>
+    </java>
+  </target>
+
+
   <target name="paybonus" depends="compile-sample" description="Pay a Bonus">
     <echo message="Running the Pay Bonus sample application..." />
     <java dir="${sample.src.dir}/paybonus/" classname="paybonus.PayBonus" fork="true">
