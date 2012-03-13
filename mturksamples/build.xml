@@ -285,10 +285,17 @@
     </java>
   </target>
 
-  <target name="paybonuscsv" depends="compile-sample" description="Pay a Bonus">
+  <target name="paybonuscsv_backup" depends="compile-sample" description="Pay a Bonus">
     <echo message="Running the Pay Bonus CSV  application..." />
     <java dir="${sample.src.dir}/paybonus/" classname="paybonus.PayBonusCSV" fork="true">
       <arg line="'${bonuscsv}'"/>
+      <classpath refid="runtime.classpath"/>
+    </java>
+  </target>
+
+  <target name="paybonuscsv" depends="compile-sample" description="Pay a Bonus">
+    <echo message="Running the Pay Bonus CSV  application..." />
+    <java dir="${sample.src.dir}/paybonus/" classname="paybonus.PayBonusCSV" fork="true">
       <classpath refid="runtime.classpath"/>
     </java>
   </target>
@@ -302,10 +309,17 @@
     </java>
   </target>
 
+  <target name="notifycsv_test" depends="compile-sample" description="Pay a Bonus">
+    <echo message="Running the Notify CSV  application..." />
+    <java dir="${sample.src.dir}/massnotify/" classname="massnotify.NotifyCSV_text" fork="true">
+      <arg line="'${notifycsv}'"/>
+      <classpath refid="runtime.classpath"/>
+    </java>
+  </target>
+
   <target name="notifycsv" depends="compile-sample" description="Pay a Bonus">
     <echo message="Running the Notify CSV  application..." />
     <java dir="${sample.src.dir}/massnotify/" classname="massnotify.NotifyCSV" fork="true">
-      <arg line="'${notifycsv}'"/>
       <classpath refid="runtime.classpath"/>
     </java>
   </target>
@@ -512,7 +526,7 @@
     <echo message="Run 'ant reviewerForHIT -DhitID=[the HIT ID]' to run the Reviewer application." />
     <echo message="Run 'ant reviewerForHITFile -Dsuccess_file=[filename of .success file]' -Doutput_file=[filename of output file] to run the Reviewer application." />
     <echo message="Run 'ant paybonus -DassignID=[assignment id] -DworkerID=[the worker ID] -Dbonusamt=[the Bonus Amount] -dReason=[the reason for the bonus]' to run the paybonus application." />
-    <echo message="Run 'ant paybonuscsv -Dbonuscsv=[filename of .csv file] to pay bonuses in batch specified by the csv file." />
+    <echo message="Run 'ant paybonuscsv to pay bonuses in batch specified by a csv file." />
     <echo message="Run 'ant notifycsv -Dnotifycsv=[filename of .csv file] to send messages in batch specified by the csv file." />
     <echo message="Run 'ant filter' to run the MyHIT application which uses the AppendKeywordFilter." />
     <echo message="Run 'ant compile-sample' to compile the sample code." />

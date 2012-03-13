@@ -23,7 +23,7 @@ import com.amazonaws.mturk.requester.HIT;
 import au.com.bytecode.opencsv.CSVReader;
 import java.io.*;
 
-public class PayBonusCSV {
+public class PayBonusCSV_backup {
 
   /**
    * Main method

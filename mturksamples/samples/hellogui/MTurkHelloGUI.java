@@ -1,17 +1,17 @@
 /*
  * Copyright 2007-2008 Amazon Technologies, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at:
- *
+ * 
  * http://aws.amazon.com/apache2.0
- *
+ * 
  * This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES
  * OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and
  * limitations under the License.
- */
+ */ 
 
 /*
  * Copyright (c) 1995, 2008, Oracle and/or its affiliates. All rights reserved.
@@ -45,19 +45,13 @@
  */ 
 
 
-
-package massnotify;
+package hellogui;
 
 import com.amazonaws.mturk.service.axis.RequesterService;
 import com.amazonaws.mturk.service.exception.ServiceException;
 import com.amazonaws.mturk.util.PropertiesClientConfig;
 import com.amazonaws.mturk.requester.HIT;
-import au.com.bytecode.opencsv.CSVReader;
 import java.io.*;
-import com.amazonaws.mturk.service.axis.RequesterService;
-import com.amazonaws.mturk.service.exception.ServiceException;
-import com.amazonaws.mturk.util.PropertiesClientConfig;
-import com.amazonaws.mturk.requester.HIT;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -65,39 +59,32 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
 
 
-
-
 /**
  * The MTurk Hello World sample application creates a simple HIT via the Mechanical Turk 
  * Java SDK. mturk.properties must be found in the current file path.
  */
-public class NotifyCSV extends JPanel
+public class MTurkHelloGUI extends JPanel
     implements ActionListener {
 
     private RequesterService service;
 
     // Defining the atributes of the HIT to be created
+    private String title = "Answer a question";
+    private String description = 
+	"This is a HIT created by the Mechanical Turk SDK.  Please answer the provided question.";
+    private int numAssignments = 1;
+    private double reward = 0.05;
     static private final String newline = "\n";
     JButton openButton, saveButton;
     JTextArea log;
     JFileChooser fc;
-
-    String fname = "";
-    String assignid = "";
-    String workerid = "";
-    Double bonusamt = 0.0;
-    String reason   = "";
-    String tot      = "";
-    int    nbonus   =  0;
-    Double totbonus = 0.0;
-
 
 
     /**
      * Constructor
      * 
      */
-    public NotifyCSV() {
+    public MTurkHelloGUI() {
         super(new BorderLayout());
 	service = new RequesterService(new PropertiesClientConfig("../mturk.properties"));
 
@@ -149,58 +136,51 @@ public class NotifyCSV extends JPanel
 
         //Handle open button action.
         if (e.getSource() == openButton) {
-            int returnVal = fc.showOpenDialog(NotifyCSV.this);
+            int returnVal = fc.showOpenDialog(MTurkHelloGUI.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 File file = fc.getSelectedFile();
                 //This is where a real application would open the file.
-		String subject  = "";
-		String body     = "";
-
-		String[] workerids = new String[1];
-
-		try {
-		    BufferedReader r = new BufferedReader(new FileReader(file));
-		    CSVReader c = new CSVReader(r);
-		    
-		    log.append("Opening: " + file.getName() + "." + newline);
-
-		    String [] nextLine;
-		    while ((nextLine = c.readNext()) != null) {
-			// nextLine[] is an array of values from the line
-			if (subject.length()==0)
-			    {
-				subject      = nextLine[0];
-				body         = nextLine[1];
-			    }
-			workerids[0] = nextLine[2]; //0.50;
-			log.append("\nNotification:\n");
-			log.append("------------------------------------\n");
-			log.append("Subject: "+subject+"\nMessage: "+body+"\nWorker: "+nextLine[2]+"\n");
-			service.notifyWorkers(subject,body,workerids);
-		    }
-
-
-
-		} catch (Exception ex) {
-		    log.append("Error running NotifyCSV on " + file.getName()+"\n");
-		    //quit?
+		if (this.hasEnoughFund()) {
+		    this.createHelloGUI();
+		    log.append("Success.");
+		    log.append(newline);
+		} else {
+		    log.append("You do not have enough funds to create the HIT.");
+		    log.append(newline);
 		}
 
-
+                log.append("Opening: " + file.getName() + "." + newline);
             } else {
                 log.append("Open command cancelled by user." + newline);
             }
             log.setCaretPosition(log.getDocument().getLength());
 
+        //Handle save button action.
         } 
+	/*
+	else if (e.getSource() == saveButton) {
+            int returnVal = fc.showSaveDialog(MTurkHelloGUI.this);
+            if (returnVal == JFileChooser.APPROVE_OPTION) {
+                File file = fc.getSelectedFile();
+                //This is where a real application would save the file.
+                log.append("Saving: " + file.getName() + "." + newline);
+            } else {
+                log.append("Save command cancelled by user." + newline);
+            }
+            log.setCaretPosition(log.getDocument().getLength());
+        }
+	*/
     }
 
+    public void logWrite(String s) {
+	log.append(s + newline);
+    }
 
 
     /** Returns an ImageIcon, or null if the path was invalid. */
     protected static ImageIcon createImageIcon(String path) {
-        java.net.URL imgURL = NotifyCSV.class.getResource(path);
+        java.net.URL imgURL = MTurkHelloGUI.class.getResource(path);
         if (imgURL != null) {
             return new ImageIcon(imgURL);
         } else {
@@ -216,11 +196,11 @@ public class NotifyCSV extends JPanel
      */
     private static void createAndShowGUI() {
         //Create and set up the window.
-        JFrame frame = new JFrame("Mechanical Turk: Send Messages in Batch");
+        JFrame frame = new JFrame("MTurkHelloGUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         //Add content to the window.
-	NotifyCSV app = new NotifyCSV();
+	MTurkHelloGUI app = new MTurkHelloGUI();
         frame.add(app);
 
         //Display the window.
@@ -242,6 +222,37 @@ public class NotifyCSV extends JPanel
 	return balance > 0;
     }
 
+    /**
+     * Creates the simple HIT.
+     * 
+     */
+    public void createHelloGUI() {
+	try {
+
+	    // The createHIT method is called using a convenience static method of
+	    // RequesterService.getBasicFreeTextQuestion that generates the QAP for
+	    // the HIT.
+	    HIT hit = service.createHIT(
+					title,
+					description,
+					reward,
+					RequesterService.getBasicFreeTextQuestion(
+										  "What is the weather like right now in Seattle, WA?"),
+					numAssignments);
+
+	    log.append("Created HIT: " + hit.getHITId());
+	    log.append(newline);
+	    log.append("You may see your HIT with HITTypeId '" 
+			       + hit.getHITTypeId() + "' here: ");
+	    log.append(newline);
+	    log.append(service.getWebsiteURL() 
+			       + "/mturk/preview?groupId=" + hit.getHITTypeId());
+	    log.append(newline);
+
+	} catch (ServiceException e) {
+	    System.err.println(e.getLocalizedMessage());
+	}
+    }
 
     /**
      * Main method
