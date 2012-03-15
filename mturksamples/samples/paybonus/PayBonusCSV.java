@@ -90,6 +90,7 @@ public class PayBonusCSV extends JPanel
     String tot      = "";
     int    nbonus   =  0;
     Double totbonus = 0.0;
+    File loadedfile = new File("null");
 
 
 
@@ -108,9 +109,6 @@ public class PayBonusCSV extends JPanel
         log.setEditable(false);
         JScrollPane logScrollPane = new JScrollPane(log);
 
-        //Create a file chooser
-        fc = new JFileChooser();
-
         //Uncomment one of the following lines to try a different
         //file selection mode.  The first allows just directories
         //to be selected (and, at least in the Java look and feel,
@@ -128,19 +126,22 @@ public class PayBonusCSV extends JPanel
 
         //Create the save button.  We use the image from the JLF
         //Graphics Repository (but we extracted it from the jar).
-	/*
-        saveButton = new JButton("Save a File...");
+        saveButton = new JButton("Submit");
         saveButton.addActionListener(this);
-	*/
 
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(); //use FlowLayout
         buttonPanel.add(openButton);
-        //buttonPanel.add(saveButton);
+        buttonPanel.add(saveButton);
 
         //Add the buttons and the log to this panel.
         add(buttonPanel, BorderLayout.PAGE_START);
         add(logScrollPane, BorderLayout.CENTER);
+
+        //Create a file chooser
+        fc = new JFileChooser();
+
+
 
     }
 
@@ -152,13 +153,13 @@ public class PayBonusCSV extends JPanel
             int returnVal = fc.showOpenDialog(PayBonusCSV.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
+                loadedfile = fc.getSelectedFile();
                 //This is where a real application would open the file.
 		try {
-		    BufferedReader r = new BufferedReader(new FileReader(file));
+		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
 		    CSVReader c = new CSVReader(r);
 		    
-		    log.append("Opening: " + file.getName() + "." + newline);
+		    log.append("Opening: " + loadedfile.getName() + "." + newline);
 
 		    String [] nextLine;
 		    while ((nextLine = c.readNext()) != null) {
@@ -167,17 +168,20 @@ public class PayBonusCSV extends JPanel
 			workerid = nextLine[1];//"A27ANNY9E0URA2";
 			bonusamt = Double.parseDouble(nextLine[2]); //0.50;
 			reason   = nextLine[3]; //"because i'm awesome that's why";
-			log.append("Trying to construct a grant bonus request:\n");
-			log.append("Assignment: "+assignid+"\nWorker: "+workerid+"\nBonus: "+nextLine[2]+"\nReason: "+reason+"\n");
-			service.grantBonus(workerid,bonusamt,assignid,reason);
-			log.append(".............................................Complete.\n");
+			log.append(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
+			log.append("PREVIEW> Trying to construct a grant bonus request:\n");
+			log.append("PREVIEW> Assignment: "+assignid+"\nPREVIEW> Worker: "+workerid+"\nPREVIEW> Bonus: "+nextLine[2]+"\nPREVIEW> Reason: "+reason+"\n");
+			//service.grantBonus(workerid,bonusamt,assignid,reason);
+			//log.append(".............................................Complete.\n");
 			totbonus += bonusamt;
 			nbonus++;
 		    }
-		    log.append("Awarded a total of $"+totbonus+" to "+nbonus+" workers.\n");
+		    log.append("This operation will attempt to award a total of $"+totbonus+" to "+nbonus+" workers.\n");
+		    nbonus=0;
+		    totbonus=0.0;
 
 		} catch (Exception ex) {
-		    log.append("Error running PayBonusCSV on " + file.getName()+"\n");
+		    log.append("Error running PayBonusCSV on " + loadedfile.getName()+"\n");
 		    //quit?
 		}
 
@@ -189,19 +193,39 @@ public class PayBonusCSV extends JPanel
 
         //Handle save button action.
         } 
-	/*
 	else if (e.getSource() == saveButton) {
-            int returnVal = fc.showSaveDialog(PayBonusCSV.this);
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
-                //This is where a real application would save the file.
-                log.append("Saving: " + file.getName() + "." + newline);
-            } else {
-                log.append("Save command cancelled by user." + newline);
-            }
+            //int returnVal = fc.showSaveDialog(PayBonusCSV.this);
+	    //            if (returnVal == JFileChooser.APPROVE_OPTION) {
+		try {
+		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
+		    CSVReader c = new CSVReader(r);
+		    log.append(newline+newline+newline);
+		    log.append("Submitting: " + loadedfile.getName() + "." + newline);
+
+		    String [] nextLine;
+		    while ((nextLine = c.readNext()) != null) {
+			// nextLine[] is an array of values from the line
+			assignid = nextLine[0];//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
+			workerid = nextLine[1];//"A27ANNY9E0URA2";
+			bonusamt = Double.parseDouble(nextLine[2]); //0.50;
+			reason   = nextLine[3]; //"because i'm awesome that's why";
+			//log.append("Trying to .construct a grant bonus request:\n");
+			//log.append("Assignment: "+assignid+"\nWorker: "+workerid+"\nBonus: "+nextLine[2]+"\nReason: "+reason+"\n");
+			service.grantBonus(workerid,bonusamt,assignid,reason);
+			//log.append(".............................................Complete.\n");
+			totbonus += bonusamt;
+			nbonus++;
+		    }
+		    log.append("Awarded a total of $"+totbonus+" to "+nbonus+" workers.\n");
+
+		} catch (Exception ex) {
+		    log.append("Error submitting PayBonusCSV on " + loadedfile.getName()+"\n");
+		    //quit?
+		}
+
+		//            }
             log.setCaretPosition(log.getDocument().getLength());
         }
-	*/
     }
 
 
@@ -269,61 +293,3 @@ public class PayBonusCSV extends JPanel
         });
     }
 }
-
-
-
-
-
-
-
-/*
-public class PayBonusCSV {
-
-  /**
-   * Main method
-   *
-   /
-  public static void main(String[] args) {
-
-	RequesterService service = new RequesterService(new PropertiesClientConfig("../mturk.properties"));
-
-	// parse the input or something
-	System.out.println("Opened requester.");
-
-	String fname = args[0];
-	String assignid = "";
-	String workerid = "";
-	Double bonusamt = 0.0;
-	String reason   = "";
-	String tot      = "";
-	int    nbonus   =  0;
-	Double totbonus = 0.0;
-
-
-	try {
-	    BufferedReader r = new BufferedReader(new FileReader(fname));
-	    CSVReader c = new CSVReader(r);
-
-	    String [] nextLine;
-	    while ((nextLine = c.readNext()) != null) {
-		// nextLine[] is an array of values from the line
-		assignid = nextLine[0];//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
-		workerid = nextLine[1];//"A27ANNY9E0URA2";
-		bonusamt = Double.parseDouble(nextLine[2]); //0.50;
-		reason   = nextLine[3]; //"because i'm awesome that's why";
-		System.out.println("Trying to construct a grant bonus request:");
-		System.out.println("Assignment: "+assignid+"\nWorker: "+workerid+"\nBonus: "+nextLine[2]+"\nReason: "+reason);
-		service.grantBonus(workerid,bonusamt,assignid,reason);
-		System.out.println(".............................................Complete.");
-		totbonus += bonusamt;
-		nbonus++;
-	    }
-	    System.out.println("Awarded a total of $"+totbonus+" to "+nbonus+" workers.");
-
-	} catch (Exception e) {
-	    System.err.println("Error running PayBonusCSV on " + fname);
-	    System.exit(1);
-	}
-  }
-}
-*/
