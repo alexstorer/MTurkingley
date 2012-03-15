@@ -81,6 +81,7 @@ public class NotifyCSV extends JPanel
     JButton openButton, saveButton;
     JTextArea log;
     JFileChooser fc;
+    File loadedfile = new File("null");
 
     String fname = "";
     String assignid = "";
@@ -128,15 +129,15 @@ public class NotifyCSV extends JPanel
 
         //Create the save button.  We use the image from the JLF
         //Graphics Repository (but we extracted it from the jar).
-	/*
-        saveButton = new JButton("Save a File...");
+
+        saveButton = new JButton("Submit");
         saveButton.addActionListener(this);
-	*/
+
 
         //For layout purposes, put the buttons in a separate panel
         JPanel buttonPanel = new JPanel(); //use FlowLayout
         buttonPanel.add(openButton);
-        //buttonPanel.add(saveButton);
+        buttonPanel.add(saveButton);
 
         //Add the buttons and the log to this panel.
         add(buttonPanel, BorderLayout.PAGE_START);
@@ -152,7 +153,7 @@ public class NotifyCSV extends JPanel
             int returnVal = fc.showOpenDialog(NotifyCSV.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                File file = fc.getSelectedFile();
+                loadedfile = fc.getSelectedFile();
                 //This is where a real application would open the file.
 		String subject  = "";
 		String body     = "";
@@ -160,10 +161,10 @@ public class NotifyCSV extends JPanel
 		String[] workerids = new String[1];
 
 		try {
-		    BufferedReader r = new BufferedReader(new FileReader(file));
+		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
 		    CSVReader c = new CSVReader(r);
 		    
-		    log.append("Opening: " + file.getName() + "." + newline);
+		    log.append("Opening: " + loadedfile.getName() + "." + newline);
 
 		    String [] nextLine;
 		    while ((nextLine = c.readNext()) != null) {
@@ -174,16 +175,16 @@ public class NotifyCSV extends JPanel
 				body         = nextLine[1];
 			    }
 			workerids[0] = nextLine[2]; //0.50;
-			log.append("\nNotification:\n");
-			log.append("------------------------------------\n");
-			log.append("Subject: "+subject+"\nMessage: "+body+"\nWorker: "+nextLine[2]+"\n");
+			log.append("\nPREVIEW> Notification:\n");
+			log.append("PREVIEW>------------------------------------\n");
+			log.append("PREVIEW> Subject: "+subject+"\nPREVIEW> Message: "+body+"\nPREVIEW> Worker: "+nextLine[2]+"\n");
 			service.notifyWorkers(subject,body,workerids);
 		    }
 
 
 
 		} catch (Exception ex) {
-		    log.append("Error running NotifyCSV on " + file.getName()+"\n");
+		    log.append("Error running NotifyCSV on " + loadedfile.getName()+"\n");
 		    //quit?
 		}
 
@@ -194,6 +195,38 @@ public class NotifyCSV extends JPanel
             log.setCaretPosition(log.getDocument().getLength());
 
         } 
+        else if (e.getSource() == saveButton) {
+		String subject  = "";
+		String body     = "";
+
+		String[] workerids = new String[1];
+
+		try {
+		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
+		    CSVReader c = new CSVReader(r);		   
+
+		    String [] nextLine;
+		    while ((nextLine = c.readNext()) != null) {
+			// nextLine[] is an array of values from the line
+			if (subject.length()==0)
+			    {
+				subject      = nextLine[0];
+				body         = nextLine[1];
+			    }
+			workerids[0] = nextLine[2]; //0.50;
+			service.notifyWorkers(subject,body,workerids);
+		    }
+		    log.append(newline+newline+newline);
+		    log.append("Submitted " + loadedfile.getName() + newline);
+
+		} catch (Exception ex) {
+		    log.append("Error running NotifyCSV on " + loadedfile.getName()+"\n");
+		    //quit?
+		}
+            log.setCaretPosition(log.getDocument().getLength());
+
+
+	}
     }
 
 
