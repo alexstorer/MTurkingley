@@ -309,13 +309,22 @@
     </java>
   </target>
 
-  <target name="notifycsv_test" depends="compile-sample" description="Pay a Bonus">
+  <target name="notifycsv_text" depends="compile-sample" description="Pay a Bonus">
     <echo message="Running the Notify CSV  application..." />
     <java dir="${sample.src.dir}/massnotify/" classname="massnotify.NotifyCSV_text" fork="true">
       <arg line="'${notifycsv}'"/>
       <classpath refid="runtime.classpath"/>
     </java>
   </target>
+
+  <target name="qualifycsv_text" depends="compile-sample" description="Pay a Bonus">
+    <echo message="Running the Qualify CSV  application..." />
+    <java dir="${sample.src.dir}/massnotify/" classname="massnotify.QualifyCSV_text" fork="true">
+      <arg line="'${qualifycsv}' '${qualname}'"/>
+      <classpath refid="runtime.classpath"/>
+    </java>
+  </target>
+
 
   <target name="notifycsv" depends="compile-sample" description="Pay a Bonus">
     <echo message="Running the Notify CSV  application..." />
@@ -528,6 +537,7 @@
     <echo message="Run 'ant paybonus -DassignID=[assignment id] -DworkerID=[the worker ID] -Dbonusamt=[the Bonus Amount] -dReason=[the reason for the bonus]' to run the paybonus application." />
     <echo message="Run 'ant paybonuscsv to pay bonuses in batch specified by a csv file." />
     <echo message="Run 'ant notifycsv -Dnotifycsv=[filename of .csv file] to send messages in batch specified by the csv file." />
+    <echo message="Run 'ant qualifycsv_text -Dqualifycsv=[filename of .csv file] -Dqualname=[name of qualification] to create a new qualification and assign it to the specified workers." />
     <echo message="Run 'ant filter' to run the MyHIT application which uses the AppendKeywordFilter." />
     <echo message="Run 'ant compile-sample' to compile the sample code." />
     <echo message="Run 'ant jar' to build the sdk sources and create jar." />
