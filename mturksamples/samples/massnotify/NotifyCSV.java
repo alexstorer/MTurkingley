@@ -184,6 +184,9 @@ public class NotifyCSV extends JPanel
 
 
 		} catch (Exception ex) {
+		    StringWriter w = new StringWriter();
+		    ex.printStackTrace(new PrintWriter(w));
+		    log.append(w.toString());
 		    log.append("Error running NotifyCSV on " + loadedfile.getName()+"\n");
 		    //quit?
 		}
