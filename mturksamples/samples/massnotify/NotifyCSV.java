@@ -223,7 +223,11 @@ public class NotifyCSV extends JPanel
 		    log.append("Submitted " + loadedfile.getName() + newline);
 
 		} catch (Exception ex) {
+		    StringWriter w = new StringWriter();
+		    ex.printStackTrace(new PrintWriter(w));
+		    log.append(w.toString());
 		    log.append("Error running NotifyCSV on " + loadedfile.getName()+"\n");
+
 		    //quit?
 		}
             log.setCaretPosition(log.getDocument().getLength());
