@@ -63,7 +63,7 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.*;
-
+import java.util.ArrayList;
 
 
 
@@ -167,7 +167,8 @@ public class NotifyCSV extends JPanel
 		    log.append("Opening: " + loadedfile.getName() + "." + newline);
 
 		    String [] nextLine;
-		    while ((nextLine = c.readNext()) != null) {
+		    int counter = 0;
+		    while ((nextLine = c.readNext()) != null & counter<10) {
 			// nextLine[] is an array of values from the line
 			if (subject.length()==0)
 			    {
@@ -178,7 +179,12 @@ public class NotifyCSV extends JPanel
 			log.append("\nPREVIEW> Notification:\n");
 			log.append("PREVIEW>------------------------------------\n");
 			log.append("PREVIEW> Subject: "+subject+"\nPREVIEW> Message: "+body+"\nPREVIEW> Worker: "+nextLine[2]+"\n");
-			service.notifyWorkers(subject,body,workerids);
+			counter = counter+1;
+			//service.notifyWorkers(subject,body,workerids);
+		    }
+		    if (counter == 10) {
+			log.append("\n\n\n>>>>>>>>>>>>> ONLY FIRST 10 RECORDS PREVIEWED <<<<<<<<<<<<<\n\n\n");
+			log.append("Please press 'Submit' to notify ALL workers in your file...");
 		    }
 
 
@@ -203,6 +209,8 @@ public class NotifyCSV extends JPanel
 		String body     = "";
 
 		String[] workerids = new String[1];
+		ArrayList<String> failedworkers;
+		failedworkers = new ArrayList<String>();
 
 		try {
 		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
@@ -217,7 +225,13 @@ public class NotifyCSV extends JPanel
 				body         = nextLine[1];
 			    }
 			workerids[0] = nextLine[2]; //0.50;
-			service.notifyWorkers(subject,body,workerids);
+			try {
+			    service.notifyWorkers(subject,body,workerids);
+			    log.append("\nNotified user: "+workerids[0]);
+			    System.out.println("Notified user: "+workerids[0]);
+			} catch (Exception ex) {
+			    failedworkers.add(workerids[0]);
+			}
 		    }
 		    log.append(newline+newline+newline);
 		    log.append("Submitted " + loadedfile.getName() + newline);
@@ -230,8 +244,11 @@ public class NotifyCSV extends JPanel
 
 		    //quit?
 		}
+		for ( String w : failedworkers  ){
+		    log.append("NotifyCSV failed on " + w +"\n");
+		}
             log.setCaretPosition(log.getDocument().getLength());
-
+	    
 
 	}
     }
