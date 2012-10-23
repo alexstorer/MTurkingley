@@ -11,19 +11,35 @@
 \usepackage{natbib}
 \usepackage{xcolor}
 \usepackage{hyperref}
+\setlength{\parindent}{0in} 
+\renewcommand{\familydefault}{\sfdefault}
 \hypersetup{
 citebordercolor=green
-}
+} 
 \onehalfspacing
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 \title{Guide to the MTurk Command Line Tools}
-\author{Harvard Department of Government}
-\date{Last updated: March 11, 2012}                                          
+\author{Christopher Lucas\\
+        Government Department\\
+        Harvard University\\
+      \and
+        Alex Storer\\
+        IQSS\\
+        Harvard University\\
+      \and
+        Dustin Tingley\\
+        Government Department\\
+        Harvard University}
+\date{Last updated: October 23, 2012}                                          
 \begin{document}
 \maketitle
 
 \begin{quotation}
-The MTurk Command Line Tools are a set of CLIs that expand on the functions available through the MTurk website. This guide prepares the user to use the Command Line Tools and explains how to use two additional functions, NotifyCSV and PayBonusCSV. If you have any questions, contact clucas@fas.harvard.edu.
+\noindent The MTurk Command Line Tools are a set of CLIs that expand on the functions available through the Amazon Mechanical Turk website. This guide prepares the user to use three functions: \verb+NotifyCSV+, \verb+PayBonusCSV+, and \verb+qualifycsv_text+. \verb+NotifyCSV+ allows the user to send an email to 
+a batch of MTurk workers, \verb+PayBonusCSV+ pays a list of workers a bonus, and 
+\verb+qualifycsv_text+ creates and assigns a new qualification to a list of MTurk 
+Workers. The final section of this guide provides examples of different ways in which 
+these utilities might be used in conjunction. If you have any questions, contact \href{mailto:clucas@fas.harvard.edu}{\nolinkurl{clucas@fas.harvard.edu}}.
 \end{quotation}
 
 \section*{Getting Started}
@@ -35,33 +51,19 @@ The MTurk Command Line Tools are a set of CLIs that expand on the functions avai
 \end{enumerate}
 
 \section*{Downloading the Command Line Tools}
-
 \begin{enumerate}
-	\item The Command Line Tools use the Java Runtime Environment (JRE). The JRE is probably installed on your computer already. However, you can check by visiting this 					\href{http://javatester.org/version.html}{website} or by calling \verb+java -version+ at the command line. Though the Command Line Tools were written for JRE 5 (1.5.X) and are not 100\% compatible with JRE 6 (1.6.X), NotifyCSV and PayBonusCSV function properly with JRE 6. 
-	\item If your computer does not have the JRE, you will need to install it. If you use Windows, you can download the JRE with the Command Line Tools. This is not an option for users with a *nix machine. If you need to download the JRE or prefer to install it apart from the Command Line Tools, click this \href{java.sun.com/javase/downloads/index_jdk5.jsp}{link} for JRE 5 or this \href{http://java.com/en/download/index.jsp}{link} for JRE 6.
-	\item Download the Command Line Tools:
-	\begin{itemize}
-		\item Windows users: You have three download options. 
-			\begin{itemize}
-				\item Command Line Tools with Setup, includes the Java Runtime Environment (JRE)
-				\item Command Line Tools without Setup, includes JRE 
-				\item Command Line Tools without Setup, no JRE
-			\end{itemize}
-		\item *nix users: You have one option, which does not include a setup file or the JRE
-	\end{itemize}
-	\item Download the appropriate version \href{http://aws.amazon.com/developertools/694}{here.}
+	\item To download the additional functions, click this \href{https://github.com/alexstorer/MTurkingley}{link.}
+	\item Click \verb+ZIP+. This will download a zip file.
+	\item Uncompress the downloaded zip file into a convenient folder. The unzipped files will be in a directory named ``alexstorer-Mturkingley-d1a53b9.''
+
 \end{enumerate}
 
 \section*{Installing the Command Line Tools}
 
-\begin{quotation}
-If you downloaded and installed \verb+mech-turk-setup.exe+ (the Windows download with the setup and the JRE), you can skip this section.
-\end{quotation}
-
 \begin{enumerate}
-	\item Uncompress the zipped file into a convenient folder. 
-	\item Open the file $\sim$\verb+\aws-mturk-clt-1.3.0\bin\mturk.properties+ in a text editor.
-	\item Set your access key and your secret key to reflect your AWS identifiers.
+	\item Open the file\\ $\sim$\verb+\alexstorer-MTurkingley-d1a53b9\mturksamples\samples\mturk.properties+ in a text editor.
+	\item Set your access key and your secret key to reflect your AWS identifiers. To set your access key, replace \verb+AKIAJ55VK6ZI4ZUZM5AA+ with your
+access key. To set your secret key, replace \verb+CeuTfvPWjVeVSJBDcKCuqDp1t9s7CXh21CvmxkIf+ with your secret key.
 	\begin{itemize}
 		\item You can find your access key and secret key \href{https://aws-portal.amazon.com/gp/aws/securityCredentials}{here.}
 		\item Set the keys according to the following example. 
@@ -71,46 +73,146 @@ If you downloaded and installed \verb+mech-turk-setup.exe+ (the Windows download
 		\end{verbatim}
 	\end{itemize}
 	\item Save and close the file.
-	\item *nix users: You must set the \verb+MTURK_CMD_HOME+ environment variable and the \verb+JAVA_HOME+ environment variable. 
-		\begin{itemize}
-			\item At the command line, type and enter \verb+export MTURK_CMD_HOME=/where/you/installed/the/CLT+ to set the \verb+MTURK_CMD_HOME+ environment variable. 
-			\item You must set the \verb+JAVA_HOME+ environment variable to point to your Java Standard Edition Runtime Environment (JRE) installation location. If you do not know your JRE installation location, try \verb+which java+. If that doesn't work, try 
-\verb+locate java+. 
-			\item To set the \verb+JAVA_HOME+ environment variable, type and enter \verb+export JAVA_HOME=/usr/local/jdk-1.5+ at the command line. 
-		\end{itemize}
 \end{enumerate}
 
-\section*{Using the Command Line Tools in the Developer Sandbox}
+\section*{Using the Command Line Tools in the Production Site}
 
 \begin{quotation}
-The Developer Sandbox is a simulated environment that allows developers to test their Amazon Mechanical Turk solutions for free. The Command Line Tools are set by default to work with the production site. However, the can also be used in the Developer Sandbox. 
+\noindent By default, the Command Line Tools are set to work in the the Developer Sandbox. The Developer Sandbox is a simulated environment that allows developers to test their Amazon Mechanical Turk solutions for free. However, it is simple to change between the two websites. 
 \end{quotation}
 
 \begin{enumerate}
-	\item \item Open the file $\sim$\verb+\aws-mturk-clt-1.3.0\bin\mturk.properties+ in a text editor.
-	\item Comment out the Production site \verb+service_url+ with a "\#."
-	\item Uncomment the Developer Sandbox \verb+service_url+ by removing the "\#."
+	\item Open the file $\sim$\verb+\aws-mturk-clt-1.3.0\bin\mturk.properties+ in a text editor.
+        \item Comment out the Developer Sandbox \verb+service_url+ with a ``\#.''
+	\item Uncomment the Production site \verb+service_url+ by removing the ``\#.''
+	
 \end{enumerate}
 
-\section*{Running NotifyCSV}
+To return to the Sandbox, simply reverse the process above. 
+
+\section*{Getting to the command line}
+
+\begin{enumerate}
+	\item You will need to use the command line to edit and run the additional functions. If you know how to open a command line window, you may skip this section.
+	\item Unix users: To open a command line window, click on \verb+Terminal+ under Applications.
+	\item Windows users: Click ``Start'', type \verb+cmd+, and press enter.
+\end{enumerate}
+
+\section*{NotifyCSV}
+
+\begin{quotation}
+\noindent \emph{NotifyCSV is a utility that allows users to notify a number of workers in batch by email.}
+\end{quotation}
 
 \begin{enumerate}
 	\item Before running the script, you must set up the csv input file such that the first line contains a comma-separated list consisting of the message subject, the message body, and the worker ID. Subsequent lines must contain only the next worker ID to receive the same message. 
+	\item The CSV file should like like the following.\\
+	\verb+This is your message subject, ``This is your message body'', WorkerID#1+\\
+	\verb+,,WorkerID#2+\\
+	\verb+,,WorkerID#3+\\
+	\verb+...+\\
+	where you replace the variables above with the appropriate values. To see an example CSV, click this \href{https://dl.dropbox.com/u/9693706/notify.csv}{link.}
+	\item You may use grammatical commas within your message body (within the quotes). 
 	\item Messages can only be sent to a worker ID that you have interacted with in the past.
-	\item From the command line, navigate to the directory containing the \verb+build.xml+. 
-	\item Type and enter \verb+ant+ at the command line. The output should say ``BUILD SUCCESSFUL'' near the end. If not, install Apache Ant \href{http://ant.apache.org/}{here.}
-	\item Type and enter \verb+ant notifycsv -Dnoitifycsv=/location/of/the/csv+.
+	\item From the command line, navigate to the directory containing \verb+build.xml+. To do so, type and enter the following (note that Windows users should replace / with \textbackslash).\\
+	\verb+cd [path to GitHub file]/alexstorer-MTurkingley-b9dd703/mturksamples+
+	\item Type and enter \verb+ant+ at the command line. The output should say ``BUILD SUCCESSFUL'' near the end. If not, install Apache Ant \href{http://ant.apache.org/}{here.} For help installing Ant, see the appendix.
+	\item Type and enter the following.\\ \verb+ant notifycsv -Dnoitifycsv=/location/of/the/csv+.
 \end{enumerate}
 
-\section*{Running PayBonusCSV}
+\section*{PayBonusCSV}
+
+\begin{quotation}
+\noindent \emph{PayBonusCSV is a utility allows users to pay bonuses to a number of workers in batch.}
+\end{quotation}
 
 \begin{enumerate}
 	\item Before running the script, you must set up the csv input file such that each line contains a comma-separated list consisting of the assignment ID, the worker ID, the bonus amount and the reason for paying (in that order). 
-	\item From the command line, navigate to the directory containing the \verb+build.xml+. 
-	\item Type and enter \verb+ant+ at the command line. The output should say ``BUILD SUCCESSFUL'' near the end. If not, install Apache Ant \href{http://ant.apache.org/}{here.}
-	\item Type and enter \verb+ant ant paybonuscsv -Dbonuscsv=/location/of/the/csv+.
+	\item The CSV file should like like the following.\\
+	\verb+AssignmentID,WorkerID#1,PaymentBonus#1,Reason#1+\\
+	\verb+AssignmentID,WorkerID#2,PaymentBonus#2,Reason#2+\\
+	\verb+AssignmentID,WorkerID#3,PaymentBonus#3,Reason#3+\\
+	\verb+...+\\
+	where you replace the variables above with the appropriate values. To see an example CSV, click this \href{https://dl.dropbox.com/u/9693706/bonus.csv}{link.}
+	\item Do not use commas except to separate the variables.
+	\item From the command line, navigate to the directory containing \verb+build.xml+. To do so, type and enter the following (note that Windows users should replace / with \textbackslash).\\
+	\verb+cd [path to GitHub file]/alexstorer-MTurkingley-b9dd703/mturksamples+
+	\item Type and enter \verb+ant+ at the command line. The output should say ``BUILD SUCCESSFUL'' near the end. If not, install Apache Ant \href{http://ant.apache.org/}{here.} For help installing Ant, see the appendix.
+	\item Type and enter the following.\\ \verb+ant paybonuscsv -Dbonuscsv=/location/of/the/csv+.
 \end{enumerate}
 
+\section*{qualifycsv\_text}
+
+\begin{quotation}
+\noindent \emph{qualifycsv\_text is a utility allows users to create a qualification and assign it to workers in batch.}
+\end{quotation}
+
+\begin{enumerate}
+\item Before running the script, you must set up the csv input file such that each line contains a comma-separated list consisting of the assignment ID, the worker ID, the bonus amount and the reason for paying (in that order). 
+\item The CSV file should like like the following.\\
+\verb+WorkerID#1+\\
+\verb+WorkerID#2+\\
+\verb+WorkerID#3+\\
+\verb+...+\\
+where you replace the variables above with the appropriate values. To see an example CSV, click this \href{https://dl.dropbox.com/u/9693706/qualify.csv}{link.}
+\item From the command line, navigate to the directory containing \verb+build.xml+. To do so, type and enter the following (note that Windows users should replace / with \textbackslash).\\
+	\verb+cd [path to GitHub file]/alexstorer-MTurkingley-b9dd703/mturksamples+
+	\item Type and enter \verb+ant+ at the command line. The output should say ``BUILD SUCCESSFUL'' near the end. If not, install Apache Ant \href{http://ant.apache.org/}{here.} For help installing Ant, see the appendix.
+	\item Type and enter the following.\\ \verb+ant qualifycsv_text -Dqualifycsv=/location/of/the/csv -Dqualname=[qualification name]+.
+\item Note that qualifications assigned to workers are visible to workers. Thus, choose the name of the qualification carefully such that 
+it does not compromise the integrity of any research you may be conducting.
+\item \verb+qualifycsv_text+ cannot be used to assign existing qualifications to new workers. It can only assign new qualifications that it
+creates. 
+\end{enumerate}
+
+\section*{Examples}
+
+\subsection*{Sending a survey to specific workers}
+
+\begin{quotation}
+\noindent \emph{The standard MTurk Requester interface does not allow requester
+to target specific workers for HITs. However, requesters can ``call back'' specific
+workers with the tools in this package. The following steps outline this procedure.}
+\end{quotation}
+
+\begin{enumerate}
+  \item Identify the workers you want to call back for a follow-up survey.
+  \item Use \verb+qualifycsv_text+ to assign a new qualification to the workers you wish to call back.
+  \item Create a HIT in MTurk. Under ``Additional Qualifications,'' select the qualification created in Step 1. Under 
+    ``Require qualification for preview,'' select ``Yes'' for ``Workers must have all of the required Qualifications in order to preview your 
+    HITs.'' This will limit the visibility of the survey to those workers whose responses you want. Workers without the qualification assigned
+    in Step 1 will not be able to accept the HIT.
+ \item Next, use \verb+NotifyCSV+ to send an email to the workers you want to call back. The following text is an example email one 
+might wish to send.
+\begin{quotation}
+\noindent Hello. Based on previous HITs you've completed, you're eligible for a special survey. Your response is very important - we hope you'll take the
+time to complete the HIT. Note that it pays particularly well (\$99,999,999,999.99). To take this HIT, please login to MTurk and, after logging
+in, click the link below.\\
+\\
+www.LinkToAwesomeHIT.com
+\end{quotation}
+
+\item Note that in order to include a link to the HIT, you must find the HIT as a Mechanical Turk worker. As far as we know, HIT urls are 
+not displayed to requesters. Thus, you must create a worker account if you do not have one, assign the qualification to yourself (otherwise you
+will not be able to see the HIT), find the HIT, click on it, and copy the url. Also note that you will not be able to assign the qualification
+to your own worker ID without first completing a HIT for your requester account. Finally, the url will only link to your HIT if the user is
+logged in before clicking it. Otherwise, the user will be rerouted to the Mechanical Turk Requester interface.
+
+\item In our experience, response rates are typically between 30 and 50\%. 
+
+\end{enumerate}
+\newpage
+\appendix
+
+\section{Installing Apache Ant}
+
+\begin{enumerate}
+  \item Go to this \href{http://ant.apache.org/}{link.} 
+  \item Click \verb+Manual+ on the left sidebar. 
+  \item Click \verb+Installing Apache Ant+.
+  \item Click \verb+Getting Ant+.
+  \item Follow the instructions to install Apache Ant.
+\end{enumerate}
 
 \end{document}
 
