@@ -171,8 +171,8 @@ public class PayBonusCSV extends JPanel
 		    String [] nextLine;
 		    while ((nextLine = c.readNext()) != null) {
 			// nextLine[] is an array of values from the line
-			assignid = nextLine[0];//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
-			workerid = nextLine[1];//"A27ANNY9E0URA2";
+			assignid = nextLine[0].toUpperCase();//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
+			workerid = nextLine[1].toUpperCase();//"A27ANNY9E0URA2";
 			bonusamt = Double.parseDouble(nextLine[2]); //0.50;
 			reason   = nextLine[3]; //"because i'm awesome that's why";
 			log.append(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
@@ -213,8 +213,8 @@ public class PayBonusCSV extends JPanel
                             while ((nextLine = c.readNext()) != null) {
                                 // nextLine[] is an array of values from the line
                                 i++;
-                                final String assignid = nextLine[0].trim();//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
-                                final String workerid = nextLine[1].trim();//"A27ANNY9E0URA2";
+                                final String assignid = nextLine[0].trim().toUpperCase();//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
+                                final String workerid = nextLine[1].trim().toUpperCase();//"A27ANNY9E0URA2";
                                 final Double bonusamt = Double.parseDouble(nextLine[2]); //0.50;
                                 final String reason   = nextLine[3]; //"because i'm awesome that's why";
                                 final int j = i;
