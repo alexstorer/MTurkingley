@@ -1,4 +1,10 @@
 /*
+ * Modifications written by Alex Storer in 2014.
+ * ---------------------------------------------
+ * https://github.com/alexstorer/MTurkingley/
+ */
+
+/*
  * Copyright 2007-2008 Amazon Technologies, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -150,6 +156,7 @@ public class PayBonusCSV extends JPanel
 
         //Handle open button action.
         if (e.getSource() == openButton) {
+
             int returnVal = fc.showOpenDialog(PayBonusCSV.this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -169,8 +176,7 @@ public class PayBonusCSV extends JPanel
 			bonusamt = Double.parseDouble(nextLine[2]); //0.50;
 			reason   = nextLine[3]; //"because i'm awesome that's why";
 			log.append(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
-			log.append("PREVIEW> Trying to construct a grant bonus request:\n");
-			log.append("PREVIEW> Assignment: "+assignid+"\nPREVIEW> Worker: "+workerid+"\nPREVIEW> Bonus: "+nextLine[2]+"\nPREVIEW> Reason: "+reason+"\n");
+			log.append("PREVIEW> Assignment: "+assignid+"\nPREVIEW> \tWorker: "+workerid+"\nPREVIEW> \tBonus: "+nextLine[2]+"\nPREVIEW> \tReason: "+reason+"\n");
 			//service.grantBonus(workerid,bonusamt,assignid,reason);
 			//log.append(".............................................Complete.\n");
 			totbonus += bonusamt;
@@ -194,37 +200,59 @@ public class PayBonusCSV extends JPanel
         //Handle save button action.
         } 
 	else if (e.getSource() == saveButton) {
-            //int returnVal = fc.showSaveDialog(PayBonusCSV.this);
-	    //            if (returnVal == JFileChooser.APPROVE_OPTION) {
-		try {
-		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
-		    CSVReader c = new CSVReader(r);
-		    log.append(newline+newline+newline);
-		    log.append("Submitting: " + loadedfile.getName() + "." + newline);
+             (new Thread()
+                {
+                    public void run(){
+                        try {
+                            BufferedReader r = new BufferedReader(new FileReader(loadedfile));
+                            CSVReader c = new CSVReader(r);
+                            log.append(newline+newline+newline);
+                            log.append("Submitting: " + loadedfile.getName() + "." + newline);
+                            int i = 0;
+                            String [] nextLine;
+                            while ((nextLine = c.readNext()) != null) {
+                                // nextLine[] is an array of values from the line
+                                i++;
+                                final String assignid = nextLine[0].trim();//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
+                                final String workerid = nextLine[1].trim();//"A27ANNY9E0URA2";
+                                final Double bonusamt = Double.parseDouble(nextLine[2]); //0.50;
+                                final String reason   = nextLine[3]; //"because i'm awesome that's why";
+                                final int j = i;
+                                //log.append("Trying to .construct a grant bonus request:\n");			
+                                SwingUtilities.invokeLater(new Runnable() {
+                                        public void run() {
+                                            log.append("\n(" + j + ") Assignment: "+assignid+"\nWorker: "+workerid+"\nBonus: "+bonusamt+"\nReason: "+reason);
+                                            log.append("\n............................................");
+                                            log.setCaretPosition(log.getDocument().getLength());
+                                        }
+                                    });
 
-		    String [] nextLine;
-		    while ((nextLine = c.readNext()) != null) {
-			// nextLine[] is an array of values from the line
-			assignid = nextLine[0];//"2C21QP6AUC26ERQ7ZEO3Y0FK0QG81X";
-			workerid = nextLine[1];//"A27ANNY9E0URA2";
-			bonusamt = Double.parseDouble(nextLine[2]); //0.50;
-			reason   = nextLine[3]; //"because i'm awesome that's why";
-			//log.append("Trying to .construct a grant bonus request:\n");
-			//log.append("Assignment: "+assignid+"\nWorker: "+workerid+"\nBonus: "+nextLine[2]+"\nReason: "+reason+"\n");
-			service.grantBonus(workerid,bonusamt,assignid,reason);
-			//log.append(".............................................Complete.\n");
-			totbonus += bonusamt;
-			nbonus++;
-		    }
-		    log.append("Awarded a total of $"+totbonus+" to "+nbonus+" workers.\n");
+                                if (bonusamt>0) {
+                                    service.grantBonus(workerid,bonusamt,assignid,reason);
+                                }
+                                //log.append(".............................................Complete.\n");
+                                totbonus += bonusamt;
+                                nbonus++;
+                            }
+                            final Double ftotbonus = totbonus;
+                            final int fnbonus = nbonus;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                    public void run() {
+                                        log.append("\n\n\nAwarded a total of $"+ftotbonus+" to "+fnbonus+" workers.\n");
+                                        log.setCaretPosition(log.getDocument().getLength());
+                                    }
+                                });
 
-		} catch (Exception ex) {
-		    log.append("Error submitting PayBonusCSV on " + loadedfile.getName()+"\n");
-		    //quit?
-		}
-
-		//            }
-            log.setCaretPosition(log.getDocument().getLength());
+                        } catch (Exception ex) {
+                            log.append("Error submitting PayBonusCSV on " + loadedfile.getName()+"\n");
+                            StringWriter w = new StringWriter();
+                            ex.printStackTrace(new PrintWriter(w));
+                            log.append(w.toString());
+                            //quit?
+                        }
+                    
+                        log.setCaretPosition(log.getDocument().getLength());
+                    }}).start();
         }
     }
 
