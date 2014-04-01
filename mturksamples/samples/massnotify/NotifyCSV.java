@@ -145,7 +145,6 @@ public class NotifyCSV extends JPanel
 
     }
 
-
     public void actionPerformed(ActionEvent e) {
 
         //Handle open button action.
@@ -172,22 +171,19 @@ public class NotifyCSV extends JPanel
 			// nextLine[] is an array of values from the line
 			if (subject.length()==0)
 			    {
-				subject      = nextLine[0];
-				body         = nextLine[1];
+				subject      = nextLine[0].trim();
+				body         = nextLine[1].trim();
 			    }
-			workerids[0] = nextLine[2]; //0.50;
+			workerids[0] = nextLine[2].trim(); //0.50;
 			log.append("\nPREVIEW> Notification:\n");
 			log.append("PREVIEW>------------------------------------\n");
 			log.append("PREVIEW> Subject: "+subject+"\nPREVIEW> Message: "+body+"\nPREVIEW> Worker: "+nextLine[2]+"\n");
 			counter = counter+1;
-			//service.notifyWorkers(subject,body,workerids);
 		    }
 		    if (counter == 10) {
 			log.append("\n\n\n>>>>>>>>>>>>> ONLY FIRST 10 RECORDS PREVIEWED <<<<<<<<<<<<<\n\n\n");
 			log.append("Please press 'Submit' to notify ALL workers in your file...");
 		    }
-
-
 
 		} catch (Exception ex) {
 		    StringWriter w = new StringWriter();
@@ -205,51 +201,72 @@ public class NotifyCSV extends JPanel
 
         } 
         else if (e.getSource() == saveButton) {
-		String subject  = "";
-		String body     = "";
+             (new Thread()
+                {
+                    public void run(){
+                        String subject  = "";
+                        String body     = "";
+                        int i = 0;
 
-		String[] workerids = new String[1];
-		ArrayList<String> failedworkers;
-		failedworkers = new ArrayList<String>();
+                        String[] workerids = new String[1];
+                        ArrayList<String> failedworkers;
+                        failedworkers = new ArrayList<String>();
+                    
+                        try {
+                            BufferedReader r = new BufferedReader(new FileReader(loadedfile));
+                            CSVReader c = new CSVReader(r);		   
 
-		try {
-		    BufferedReader r = new BufferedReader(new FileReader(loadedfile));
-		    CSVReader c = new CSVReader(r);		   
+                            String [] nextLine;
+                            while ((nextLine = c.readNext()) != null) {
+                                // nextLine[] is an array of values from the line
+                                if (subject.length()==0)
+                                    {
+                                        subject      = nextLine[0].trim();
+                                        body         = nextLine[1].trim();
+                                    }
+                                workerids[0] = nextLine[2].trim(); //0.50 (remove spaces)
+                                i++;
+                                final int j = i;
+                                try{
+                                    service.notifyWorkers(subject,body,workerids);
+                                    final String lworker = workerids[0];
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                            public void run() {
+                                                log.append("\n("+ j + ") Notified user: "+lworker);
+                                            }
+                                        });
+                                }catch(Exception ex){
+                                    System.out.println("Some error");
+                                    StringWriter w = new StringWriter();
+                                    ex.printStackTrace(new PrintWriter(w));
+                                    System.out.println(w.toString());
+                                    final String lworker = workerids[0];
+                                    SwingUtilities.invokeLater(new Runnable() {
+                                            public void run() {
+                                                log.append("\n>>> Failed! User: "+lworker);
+                                            }
+                                        });
+                                }
+                            }
+                        }catch(Exception ex){
+                                    System.out.println("Some error");
+                                    StringWriter w = new StringWriter();
+                                    ex.printStackTrace(new PrintWriter(w));
+                                    System.out.println(w.toString());
+                                    final String lworker = workerids[0];
+                        }
+                        
+                        SwingUtilities.invokeLater(new Runnable() {
+                                public void run() {
+                                    log.append(newline+newline+newline);
+                                    log.append("Submitted " + loadedfile.getName() + newline);
+                                }
+                            });
+                    }
 
-		    String [] nextLine;
-		    while ((nextLine = c.readNext()) != null) {
-			// nextLine[] is an array of values from the line
-			if (subject.length()==0)
-			    {
-				subject      = nextLine[0];
-				body         = nextLine[1];
-			    }
-			workerids[0] = nextLine[2]; //0.50;
-			try {
-			    service.notifyWorkers(subject,body,workerids);
-			    log.append("\nNotified user: "+workerids[0]);
-			    System.out.println("Notified user: "+workerids[0]);
-			} catch (Exception ex) {
-			    failedworkers.add(workerids[0]);
-			}
-		    }
-		    log.append(newline+newline+newline);
-		    log.append("Submitted " + loadedfile.getName() + newline);
+                }).start();
 
-		} catch (Exception ex) {
-		    StringWriter w = new StringWriter();
-		    ex.printStackTrace(new PrintWriter(w));
-		    log.append(w.toString());
-		    log.append("Error running NotifyCSV on " + loadedfile.getName()+"\n");
-
-		    //quit?
-		}
-		for ( String w : failedworkers  ){
-		    log.append("NotifyCSV failed on " + w +"\n");
-		}
-            log.setCaretPosition(log.getDocument().getLength());
-	    
-
+            log.setCaretPosition(log.getDocument().getLength());	    
 	}
     }
 
@@ -285,7 +302,6 @@ public class NotifyCSV extends JPanel
         frame.setVisible(true);
     }
 
-
     /**
      * Check if there are enough funds in your account in order to create the HIT
      * on Mechanical Turk
@@ -316,5 +332,7 @@ public class NotifyCSV extends JPanel
                 createAndShowGUI();
             }
         });
+        //UIManager.put("swing.boldMetal", Boolean.FALSE); 
+        //createAndShowGUI();
     }
 }
